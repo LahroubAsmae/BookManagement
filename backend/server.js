@@ -4,6 +4,8 @@ dotenv.config();
 import router from "./routes/BookRoutes.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 const port = process.env.PORT || 5000;
+import { ConnectDB } from "./Config/db.js";
+ConnectDB();
 const app = express();
 app.use(express.json()); //pour lire req.json
 app.use(express.urlencoded({ extended: false }));
