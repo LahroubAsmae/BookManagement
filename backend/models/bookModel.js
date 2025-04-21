@@ -1,24 +1,42 @@
 import mongoose from "mongoose";
-const bookShema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-    trim: true, //supprimer space before and after chaine caractere
+
+const bookSchema = mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "Veuillez ajouter un titre"],
+    },
+    author: {
+      type: String,
+      required: [true, "Veuillez ajouter un auteur"],
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    genre: {
+      type: String,
+      default: "Non spécifié",
+    },
+    publishedYear: {
+      type: Number,
+    },
+    isbn: {
+      type: String,
+      default: "",
+    },
+    coverImage: {
+      type: String,
+      default: "uploads/default-book-cover.png",
+    },
+    available: {
+      type: Boolean,
+      default: true,
+    },
   },
-  author: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  available: {
-    type: Boolean,
-    default: true,
-  },
-  borrowedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  borrowDate: Date,
-  returnDate: Date,
-});
-export default mongoose.model("book", bookShema);
+  {
+    timestamps: true,
+  }
+);
+
+export default mongoose.model("Book", bookSchema);
