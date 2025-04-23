@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { Button, TextInput } from "react-native-paper";
-import { adminAPI } from "../../services/api";
+import api from "../../services/api";
 
 export default function BooksTab() {
   const [books, setBooks] = useState([]);
@@ -16,7 +16,7 @@ export default function BooksTab() {
 
   const fetchBooks = async () => {
     try {
-      const res = await adminAPI.get("/books");
+      const res = await api.get("/books");
       setBooks(res.data);
     } catch (err) {
       console.error(
@@ -29,7 +29,7 @@ export default function BooksTab() {
 
   const handleAddBook = async () => {
     try {
-      await adminAPI.post("/books", newBook);
+      await api.post("/books", newBook);
       setNewBook({ title: "", author: "" });
       fetchBooks();
     } catch (err) {

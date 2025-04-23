@@ -6,20 +6,28 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-import { adminAPI } from "../../services/api";
+import { adminService } from "../../services/api";
 import { useUser } from "../../contexts/UserContext";
 
 export default function BorrowingsTab() {
-  const { user } = useUser();
   const [borrowings, setBorrowings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useUser();
 
   const fetchBorrowings = async () => {
     try {
-      const res = await adminAPI.get("/borrowings");
-      setBorrowings(res.data);
+      setLoading(true);
+      // Vérifier que l'utilisateur est admin
+      if (!user?.isAdmin) return;
+
+      const response = await adminService.getAllBorrowings();
+      setBorrowings(response);
     } catch (err) {
-      console.error("Erreur chargement emprunts:", err);
+      Alert.alert("Erreur", "Accès admin requis");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -30,10 +38,10 @@ export default function BorrowingsTab() {
         text: "Oui",
         onPress: async () => {
           try {
-            await adminAPI.put(`/borrowings/${id}/return`);
+            await adminService.returnBorrowing(id);
             fetchBorrowings();
           } catch (err) {
-            console.error("Erreur retour:", err);
+            Alert.alert("Erreur", "Action admin requise");
           }
         },
       },
@@ -42,11 +50,19 @@ export default function BorrowingsTab() {
 
   useEffect(() => {
     fetchBorrowings();
-  }, []);
+  }, [user?.isAdmin]); // Recharge si le statut admin change
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>📖 Emprunts</Text>
+      <Text style={styles.header}>📖 Tous les emprunts</Text>
       <FlatList
         data={borrowings}
         keyExtractor={(item) => item._id}
@@ -67,6 +83,7 @@ export default function BorrowingsTab() {
     </View>
   );
 }
+// Styles inchangés
 
 const styles = StyleSheet.create({
   container: { padding: 10 },

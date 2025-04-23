@@ -108,15 +108,26 @@ export const borrowingService = {
     }
   },
 };
+// services/api.js
 export const adminService = {
-  getUsers: async () => {
+  // Récupérer tous les emprunts (admin)
+  getAllBorrowings: async () => {
     try {
-      const { data } = await api.get("/admin/users");
+      const { data } = await api.get("/borrowings"); // Utiliser l'endpoint existant
       return data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Échec utilisateurs");
+      throw new Error(error.response?.data?.message || "Échec emprunts");
+    }
+  },
+
+  // Retourner un emprunt (admin)
+  returnBorrowing: async (id) => {
+    try {
+      const { data } = await api.put(`/borrowings/${id}/return`);
+      return data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Échec retour");
     }
   },
 };
-
 export default api;
