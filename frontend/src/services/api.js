@@ -78,37 +78,36 @@ export const bookService = {
 };
 
 export const borrowingService = {
-  // Ajouter cette méthode
+  // Récupérer les emprunts de l'utilisateur
   getAll: async () => {
     try {
-      const { data } = await api.get("/borrowings/myborrowings"); // Endpoint backend
+      const { data } = await api.get("/borrowings/myborrowings"); // Endpoint backend corrigé
       return data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Erreur emprunts");
+      throw new Error(error.response?.data?.message || "Erreur de chargement");
     }
   },
 
-  // Méthode pour créer un emprunt (corrigée)
+  // Créer un nouvel emprunt (méthode unique)
   create: async (bookId) => {
     try {
       const { data } = await api.post("/borrowings", { bookId });
       return data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Échec création");
+      throw new Error(error.response?.data?.message || "Échec de l'emprunt");
     }
   },
 
-  // Méthode pour retourner un livre
+  // Retourner un livre
   returnBook: async (borrowingId) => {
     try {
       const { data } = await api.put(`/borrowings/${borrowingId}/return`);
       return data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Échec retour");
+      throw new Error(error.response?.data?.message || "Échec du retour");
     }
   },
 };
-
 export const adminService = {
   getUsers: async () => {
     try {

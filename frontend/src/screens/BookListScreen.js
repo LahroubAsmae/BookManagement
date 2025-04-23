@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import api from "../services/api";
-import { borrowingAPI } from "../services/api"; // Utilisation de l'instance dédiée aux emprunts
+import { borrowingService } from "../services/api"; // Utilisation de l'instance dédiée aux emprunts
 
 const BookListScreen = () => {
   const [books, setBooks] = useState([]);
@@ -31,7 +31,7 @@ const BookListScreen = () => {
 
   const borrowBook = async (bookId) => {
     try {
-      await borrowingAPI.post("/", { bookId }); // Utilise borrowingAPI avec le token automatiquement ajouté
+      await borrowingService.create(bookId);
       Alert.alert("Succès", "Livre emprunté avec succès !");
       fetchBooks(); // Mise à jour de la liste
     } catch (error) {
