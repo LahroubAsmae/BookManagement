@@ -14,7 +14,6 @@ import BookListScreen from "../screens/BookListScreen";
 import MyBorrowingsScreen from "../screens/MyBorrowingsScreen";
 
 // Admin Screens
-import AdminHomeScreen from "../screens/admin/AdminHomeScreen";
 import BorrowingsTabs from "../screens/admin/BorrowingsTabs";
 import BooksTab from "../screens/admin/BooksTab";
 
@@ -24,7 +23,6 @@ const Tab = createBottomTabNavigator();
 function AdminTabs() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Dashboard" component={AdminHomeScreen} />
       <Tab.Screen name="Emprunts" component={BorrowingsTabs} />
       <Tab.Screen name="Livres" component={BooksTab} />
       <Tab.Screen name="Profil" component={ProfileScreen} />

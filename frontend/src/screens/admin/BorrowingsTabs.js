@@ -8,8 +8,9 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { adminService } from "../../services/api";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useUser } from "../../contexts/UserContext";
+import { adminService } from "../../services/api";
 
 export default function BorrowingsTab() {
   const [borrowings, setBorrowings] = useState([]);
@@ -17,11 +18,10 @@ export default function BorrowingsTab() {
   const { user } = useUser();
 
   const fetchBorrowings = async () => {
+    if (!user?.isAdmin) return;
+
     try {
       setLoading(true);
-      // Vérifier que l'utilisateur est admin
-      if (!user?.isAdmin) return;
-
       const response = await adminService.getAllBorrowings();
       setBorrowings(response);
     } catch (err) {
@@ -31,50 +31,112 @@ export default function BorrowingsTab() {
     }
   };
 
-  const handleReturn = async (id) => {
+  const handleReturn = (id) => {
     Alert.alert("Confirmation", "Marquer comme retourné ?", [
-      { text: "Annuler" },
+      { text: "Annuler", style: "cancel" },
       {
-        text: "Oui",
+        text: "Confirmer",
         onPress: async () => {
           try {
-            await adminService.returnBorrowing(id);
-            fetchBorrowings();
+            const result = await adminService.returnBorrowing(id);
+
+            if (result.success) {
+              Alert.alert("Succès", result.message);
+              fetchBorrowings();
+            } else {
+              Alert.alert("Erreur", result.error);
+            }
           } catch (err) {
-            Alert.alert("Erreur", "Action admin requise");
+            console.error("[FRONTEND ERROR]", err);
+            Alert.alert("Erreur", err.message || "Action impossible", [
+              {
+                text: "Réessayer",
+                onPress: () => handleReturn(id),
+              },
+              {
+                text: "Voir les logs",
+                onPress: () => console.log("Détails erreur:", err),
+              },
+            ]);
           }
         },
       },
     ]);
   };
-
   useEffect(() => {
     fetchBorrowings();
-  }, [user?.isAdmin]); // Recharge si le statut admin change
+  }, [user?.isAdmin]);
 
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color="#E63946" />
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>📖 Tous les emprunts</Text>
+      <Text style={styles.header}>Bienvenue, Admin 👋</Text>
+
+      <View style={styles.filters}>
+        <TouchableOpacity style={styles.filterBtn}>
+          <Text style={styles.filterText}>Année</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.filterBtn, styles.filterActive]}>
+          <Text style={[styles.filterText, styles.filterTextActive]}>Mois</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.filterBtn}>
+          <Text style={styles.filterText}>Semaine</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={borrowings}
         keyExtractor={(item) => item._id}
+        contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text>Livre: {item.book?.title}</Text>
-            <Text>Utilisateur: {item.user?.name}</Text>
-            <Text>Date: {new Date(item.createdAt).toLocaleDateString()}</Text>
-            <Text>Statut: {item.returned ? "✅ Retourné" : "📚 Emprunté"}</Text>
+            <View style={styles.cardHeader}>
+              <Icon name="book-open-outline" size={26} color="#E63946" />
+              <Text style={styles.cardTitle}>{item.book?.title}</Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Icon name="account-circle-outline" size={18} color="#888" />
+              <Text style={styles.detailText}>{item.user?.name}</Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Icon name="calendar-month" size={18} color="#888" />
+              <Text style={styles.detailText}>
+                {new Date(item.createdAt).toLocaleDateString()}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Icon
+                name={
+                  item.returned ? "check-circle-outline" : "book-clock-outline"
+                }
+                size={18}
+                color={item.returned ? "#2ECC71" : "#F39C12"}
+              />
+              <Text
+                style={[
+                  styles.detailText,
+                  { color: item.returned ? "#2ECC71" : "#F39C12" },
+                ]}
+              >
+                {item.returned ? "Retourné" : "En cours"}
+              </Text>
+            </View>
+
             {!item.returned && (
-              <TouchableOpacity onPress={() => handleReturn(item._id)}>
-                <Text style={styles.return}>🔁 Marquer comme retourné</Text>
+              <TouchableOpacity
+                style={styles.returnBtn}
+                onPress={() => handleReturn(item._id)}
+              >
+                <Icon name="backup-restore" size={18} color="#fff" />
+                <Text style={styles.returnBtnText}>Marquer comme retourné</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -83,16 +145,91 @@ export default function BorrowingsTab() {
     </View>
   );
 }
-// Styles inchangés
 
 const styles = StyleSheet.create({
-  container: { padding: 10 },
-  header: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
-  card: {
-    backgroundColor: "#fff3e0",
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 8,
+  container: {
+    flex: 1,
+    backgroundColor: "#F8F9FA",
+    padding: 16,
   },
-  return: { color: "green", marginTop: 5 },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#333",
+    marginBottom: 10,
+  },
+  filters: {
+    flexDirection: "row",
+    marginBottom: 15,
+    justifyContent: "space-between",
+  },
+  filterBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: "#eaeaea",
+  },
+  filterActive: {
+    backgroundColor: "#E63946",
+  },
+  filterText: {
+    color: "#555",
+    fontWeight: "600",
+  },
+  filterTextActive: {
+    color: "#fff",
+  },
+  card: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 10,
+    color: "#333",
+  },
+  detailRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 6,
+  },
+  detailText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: "#666",
+  },
+  returnBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#E63946",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginTop: 12,
+    justifyContent: "center",
+  },
+  returnBtnText: {
+    color: "#fff",
+    fontWeight: "600",
+    marginLeft: 6,
+  },
 });

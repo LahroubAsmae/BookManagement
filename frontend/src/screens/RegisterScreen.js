@@ -8,6 +8,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { registerUser } from "../services/api";
 import { useUser } from "../contexts/UserContext";
@@ -82,7 +83,7 @@ export default function RegisterScreen({ navigation }) {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <View style={styles.innerContainer}>
+      <View style={styles.card}>
         <Text style={styles.title}>Inscription</Text>
 
         <TextInput
@@ -127,9 +128,11 @@ export default function RegisterScreen({ navigation }) {
           onPress={handleRegister}
           disabled={loading}
         >
-          <Text style={styles.buttonText}>
-            {loading ? "Inscription..." : "S'inscrire"}
-          </Text>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>S'inscrire</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -149,55 +152,65 @@ export default function RegisterScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  innerContainer: {
-    flex: 1,
     justifyContent: "center",
-    padding: 25,
+    backgroundColor: "#f9f9f9",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    marginHorizontal: 20,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 24,
     color: "#2c3e50",
-    marginBottom: 30,
     textAlign: "center",
   },
   input: {
-    height: 50,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 15,
-    fontSize: 16,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#dcdcdc",
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 15,
+    backgroundColor: "#f5f5f5",
+    fontSize: 16,
+    color: "#2c3e50",
   },
   button: {
-    backgroundColor: "#3498db",
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: "#e63946",
+    padding: 16,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: 20,
+    shadowColor: "#c62828",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   disabledButton: {
     backgroundColor: "#bdc3c7",
   },
   buttonText: {
-    color: "white",
+    color: "#fff",
     fontWeight: "600",
     fontSize: 16,
   },
   linkContainer: {
-    marginTop: 25,
+    marginTop: 20,
+    alignItems: "center",
   },
   linkText: {
+    fontSize: 14,
     color: "#7f8c8d",
-    textAlign: "center",
-    fontSize: 15,
   },
   linkHighlight: {
-    color: "#3498db",
+    color: "#e63946",
     fontWeight: "600",
   },
 });

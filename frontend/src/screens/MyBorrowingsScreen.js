@@ -4,12 +4,12 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  Button,
+  TouchableOpacity,
   Alert,
   ActivityIndicator,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { borrowingService } from "../services/api"; // Correction de l'import
+import { borrowingService } from "../services/api";
 
 export default function MyBorrowingsScreen() {
   const [borrowings, setBorrowings] = useState([]);
@@ -18,7 +18,6 @@ export default function MyBorrowingsScreen() {
   const fetchMyBorrowings = async () => {
     try {
       setLoading(true);
-      // Utilisation correcte du service
       const response = await borrowingService.getAll();
       setBorrowings(response);
     } catch (error) {
@@ -31,7 +30,6 @@ export default function MyBorrowingsScreen() {
 
   const handleReturn = async (id) => {
     try {
-      // Utilisation correcte de la méthode returnBook
       await borrowingService.returnBook(id);
       Alert.alert("Succès", "Livre retourné !");
       fetchMyBorrowings();
@@ -50,17 +48,16 @@ export default function MyBorrowingsScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#000" />
-        <Text>Chargement...</Text>
+        <ActivityIndicator size="large" color="#e63946" />
+        <Text style={{ marginTop: 10 }}>Chargement...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mes emprunts</Text>
       {borrowings.length === 0 ? (
-        <Text>Aucun emprunt en cours.</Text>
+        <Text style={styles.emptyText}>Aucun emprunt en cours.</Text>
       ) : (
         <FlatList
           data={borrowings}
@@ -72,10 +69,12 @@ export default function MyBorrowingsScreen() {
                 Status : {item.isReturned ? "✅ Retourné" : "📚 En cours"}
               </Text>
               {!item.isReturned && (
-                <Button
-                  title="Retourner"
+                <TouchableOpacity
+                  style={styles.returnButton}
                   onPress={() => handleReturn(item._id)}
-                />
+                >
+                  <Text style={styles.buttonText}>Retourner</Text>
+                </TouchableOpacity>
               )}
             </View>
           )}
@@ -85,29 +84,65 @@ export default function MyBorrowingsScreen() {
   );
 }
 
-// Les styles restent identiques
-
 const styles = StyleSheet.create({
-  container: { padding: 16 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
-  bookTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 5 },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 16,
+    color: "#2c3e50",
+    textAlign: "center",
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#7f8c8d",
+    marginTop: 20,
+  },
   card: {
-    padding: 12,
-    backgroundColor: "#f2f2f2",
-    borderRadius: 8,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 16,
     marginBottom: 12,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  bookTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#34495e",
   },
   returned: {
     color: "green",
-    marginBottom: 8,
+    marginBottom: 10,
+    fontWeight: "500",
   },
   active: {
     color: "orange",
-    marginBottom: 8,
+    marginBottom: 10,
+    fontWeight: "500",
+  },
+  returnButton: {
+    backgroundColor: "#e63946",
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "600",
   },
   center: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
 });

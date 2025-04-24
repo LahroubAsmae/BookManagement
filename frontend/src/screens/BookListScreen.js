@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Button,
   Alert,
+  Image,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import api from "../services/api";
@@ -66,8 +67,23 @@ const BookListScreen = () => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.item}>
-            <Text style={styles.bookTitle}>{item.title}</Text>
-            <Text>Auteur : {item.author}</Text>
+            {item.coverImage && (
+              <Image
+                source={{
+                  uri: `http://192.168.0.140:5000/uploads/${item.coverImage}`, // Vérifiez l'IP réelle
+                }}
+                style={styles.coverImage}
+                onError={(e) =>
+                  console.log("Erreur image:", e.nativeEvent.error)
+                }
+                defaultSource={require("../assets/default-cover.png")} // Chemin corrigé
+              />
+            )}
+            <View style={styles.textContainer}>
+              <Text style={styles.bookTitle}>{item.title}</Text>
+              <Text style={styles.author}>Auteur : {item.author}</Text>
+              <Text style={styles.genre}>Genre : {item.genre}</Text>
+            </View>
             <Button
               title="Emprunter"
               onPress={() => borrowBook(item._id)}
@@ -83,18 +99,52 @@ const BookListScreen = () => {
 export default BookListScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
-  item: {
-    padding: 10,
-    marginBottom: 10,
-    backgroundColor: "#eee",
-    borderRadius: 6,
-  },
-  bookTitle: { fontSize: 18, fontWeight: "600" },
-  center: {
+  container: {
     flex: 1,
+    padding: 10,
+  },
+  item: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    padding: 15,
+    marginVertical: 8,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  coverImage: {
+    width: 80,
+    height: 120,
+    borderRadius: 5,
+    marginRight: 15,
+  },
+  textContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
+  bookTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  author: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 3,
+  },
+
+  genre: {
+    fontSize: 12,
+    color: "#888",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+    textAlign: "center",
   },
 });

@@ -126,7 +126,9 @@ export const adminService = {
       const { data } = await api.put(`/borrowings/${id}/return`);
       return data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Échec retour");
+      throw new Error(
+        error.response?.data?.error || "Erreur lors du retour du livre"
+      );
     }
   },
 };

@@ -10,7 +10,7 @@ import {
   Platform,
   ActivityIndicator,
 } from "react-native";
-import { authService } from "../services/api"; // Modification ici
+import { authService } from "../services/api";
 import { useUser } from "../contexts/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -38,7 +38,6 @@ export default function LoginScreen({ navigation }) {
     return true;
   };
 
-  // screens/LoginScreen.js
   const handleLogin = async () => {
     if (!validateForm()) return;
 
@@ -54,7 +53,6 @@ export default function LoginScreen({ navigation }) {
     } catch (error) {
       let message = error.message;
 
-      // Personnalisation des messages
       if (message.includes("401")) {
         message = "Identifiants incorrects";
       } else if (message.includes("50")) {
@@ -66,12 +64,13 @@ export default function LoginScreen({ navigation }) {
       setLoading(false);
     }
   };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <View style={styles.innerContainer}>
+      <View style={styles.card}>
         <Text style={styles.title}>Connexion</Text>
 
         <TextInput
@@ -119,34 +118,68 @@ export default function LoginScreen({ navigation }) {
   );
 }
 
-// Les styles restent identiques
-
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", backgroundColor: "#fff" },
-  innerContainer: { paddingHorizontal: 20 },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "#f9f9f9",
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    marginHorizontal: 20,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontWeight: "700",
+    marginBottom: 24,
+    color: "#2c3e50",
     textAlign: "center",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
+    borderColor: "#dcdcdc",
+    borderRadius: 10,
+    padding: 14,
     marginBottom: 15,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#f5f5f5",
+    fontSize: 16,
+    color: "#2c3e50",
   },
   button: {
-    backgroundColor: "#007BFF",
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: "#e63946",
+    padding: 16,
+    borderRadius: 10,
+    alignItems: "center",
+    shadowColor: "#c62828",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  disabledButton: {
+    backgroundColor: "#bdc3c7",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  linkContainer: {
+    marginTop: 20,
     alignItems: "center",
   },
-  disabledButton: { backgroundColor: "#999" },
-  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  linkContainer: { marginTop: 15, alignItems: "center" },
-  linkText: { color: "#666" },
-  linkHighlight: { color: "#007BFF", fontWeight: "bold" },
+  linkText: {
+    fontSize: 14,
+    color: "#7f8c8d",
+  },
+  linkHighlight: {
+    color: "#e63946",
+    fontWeight: "600",
+  },
 });
