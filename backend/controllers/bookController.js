@@ -45,9 +45,7 @@ export const setBook = asyncHandler(async (req, res) => {
   res.status(201).json(book);
 });
 
-// Update book
 export const updateBook = asyncHandler(async (req, res) => {
-  // 1. Validation des champs
   const allowedUpdates = [
     "title",
     "author",
@@ -59,29 +57,44 @@ export const updateBook = asyncHandler(async (req, res) => {
     "available",
   ];
 
-  const isValidOperation = Object.keys(req.body).every((key) =>
-    allowedUpdates.includes(key)
+  // Vérification plus permissive
+  const updates = Object.keys(req.body);
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
   );
 
   if (!isValidOperation) {
-    res.status(400);
-    throw new Error("Mises à jour invalides!");
+    return res.status(400).json({
+      success: false,
+      error: `Champs autorisés : ${allowedUpdates.join(", ")}`,
+    });
   }
 
-  // 2. Recherche et mise à jour
-  const updatedBook = await Book.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, // Retourne le document modifié
-    runValidators: true, // Active la validation du schéma
-  });
+  try {
+    const book = await Book.findById(req.params.id);
 
-  // 3. Gestion du livre non trouvé
-  if (!updatedBook) {
-    res.status(404);
-    throw new Error("Livre non trouvé");
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        error: "Livre non trouvé",
+      });
+    }
+
+    // Mise à jour progressive pour déclencher les hooks
+    updates.forEach((update) => (book[update] = req.body[update]));
+    const updatedBook = await book.save();
+
+    res.status(200).json({
+      success: true,
+      data: updatedBook,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+      validationErrors: error.errors,
+    });
   }
-
-  // 4. Réponse
-  res.status(200).json(updatedBook);
 });
 
 // Delete book

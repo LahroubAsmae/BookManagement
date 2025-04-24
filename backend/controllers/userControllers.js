@@ -59,6 +59,16 @@ export const RegisterUser = asyncHandler(async (req, res) => {
     throw new Error("INVALID user data");
   }
 });
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erreur serveur lors du chargement des utilisateurs" });
+  }
+};
 export const LoginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
