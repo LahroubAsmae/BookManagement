@@ -1,13 +1,13 @@
-# 📚 BookManagement – Application MERN de Gestion des Emprunts de Livres
+# BookManagement – Application MERN de Gestion des Emprunts de Livres
 
 Une application mobile full-stack permettant aux utilisateurs d’emprunter des livres, et aux administrateurs de gérer la bibliothèque (livres, utilisateurs, emprunts).  
 Développée avec la stack **MERN** : MongoDB, Express.js, React Native, Node.js.
 
 ---
 
-## 🚀 Fonctionnalités
+## Fonctionnalités
 
-### 👤 Utilisateur
+###  Utilisateur
 - Inscription / Connexion sécurisée (JWT)
 - Liste des livres disponibles
 - Emprunt d’un livre
@@ -22,9 +22,9 @@ Développée avec la stack **MERN** : MongoDB, Express.js, React Native, Node.js
 
 ---
 
-## 🧱 Technologies utilisées
+## Technologies utilisées
 
-### 🔧 Backend
+###  Backend
 - **Node.js** : environnement d’exécution côté serveur
 - **Express.js** : framework minimaliste pour créer des API
 - **MongoDB** : base de données NoSQL
@@ -32,7 +32,7 @@ Développée avec la stack **MERN** : MongoDB, Express.js, React Native, Node.js
 - **JWT** : authentification sécurisée
 - **bcryptjs** : hachage des mots de passe
 
-### 📱 Frontend (mobile)
+###  Frontend (mobile)
 - **React Native** : développement mobile multiplateforme
 - **Expo** : outil de développement pour React Native
 - **React Navigation** : navigation entre écrans
